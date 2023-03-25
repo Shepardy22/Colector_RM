@@ -2,20 +2,21 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package dbConnect;
+package Models;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class SQLiteConnection {
+public final class UserModel {
 
     private Connection connection;
     private Statement statement;
 
-    public boolean connect() {
+    public void connect() {
         String url = "jdbc:sqlite:data/database.db";
         try {
             //cria a conexão com o banco de dados
@@ -27,12 +28,16 @@ public class SQLiteConnection {
 
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
-            return false;
+            
         }
-        return true;
+       
+    }
+    
+    public UserModel(){
+        connect();
     }
 
-    public boolean disconnect() {
+    public void disconnect() {
         try {
             //fecha a conexão com o banco de dados
             this.connection.close();
@@ -40,18 +45,17 @@ public class SQLiteConnection {
 
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
-            return false;
         }
-        return true;
+        
     }
 
-    public boolean createTable() {
+    public void createTable() {
         try {
             //cria uma tabela no banco de dados
             String sql = "CREATE TABLE IF NOT EXISTS usuarios (\n"
                     + " id integer PRIMARY KEY,\n"
                     + " nome text NOT NULL,\n"
-                    + " idade integer\n"
+                    + " senha integer\n"
                     + ");";
             this.statement.execute(sql);
 
@@ -59,53 +63,59 @@ public class SQLiteConnection {
 
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
-            return false;
+            
         }
-        return true;
     }
 
-    public boolean insertData() {
+    public void insertData(int id, String nome, int senha) {
         try {
             //insere dados na tabela
-            String sql = "INSERT INTO usuarios(id, nome, idade) VALUES(2, 'pedro', 32);";
-            this.statement.executeUpdate(sql);
+            String sql = "INSERT INTO usuarios(id, nome, senha) VALUES(?, ?, ?);";
+            PreparedStatement pstmt = this.connection.prepareStatement(sql);
+            pstmt.setInt(1, id);
+            pstmt.setString(2, nome);
+            pstmt.setInt(3, senha);
+            pstmt.executeUpdate();
 
             System.out.println("Dados inseridos com sucesso.");
 
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
-            return false;
+            
         }
-        return true;
     }
 
-    public boolean updateData(int id, String nome, int idade) {
+    public void updateData(int id, String nome, int senha) {
         try {
             //atualiza dados na tabela
-            String sql = "UPDATE usuarios SET nome = '" + nome + "', idade = " + idade + " WHERE id = " + id + ";";
-            this.statement.executeUpdate(sql);
+            String sql = "UPDATE usuarios SET nome = ?, senha = ? WHERE id = ?";
+            PreparedStatement pstmt = this.connection.prepareStatement(sql);
+            pstmt.setString(1, nome);
+            pstmt.setInt(2, senha);
+            pstmt.setInt(3, id);
+            pstmt.executeUpdate();
 
             System.out.println("Dados atualizados com sucesso.");
 
         } catch (SQLException ex) {
             System.err.println(ex.getMessage());
-            return false;
+            
         }
-        return true;
     }
+
 
     public void retrieveData() {
         try {
             // executa uma query para recuperar os dados da tabela
-            String sql = "SELECT id, nome, idade FROM usuarios;";
+            String sql = "SELECT id, nome, senha FROM usuarios;";
             // percorre os resultados da query e imprime na tela
             try (ResultSet rs = this.statement.executeQuery(sql)) {
                 // percorre os resultados da query e imprime na tela
                 while (rs.next()) {
                     int id = rs.getInt("id");
                     String nome = rs.getString("nome");
-                    int idade = rs.getInt("idade");
-                    System.out.println("ID: " + id + " | Nome: " + nome + " | Idade: " + idade);
+                    int senha = rs.getInt("senha");
+                    System.out.println("ID: " + id + " | Nome: " + nome + " | senha: " + senha);
                 }
             }
 

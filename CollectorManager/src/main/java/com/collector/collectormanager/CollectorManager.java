@@ -1,10 +1,15 @@
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  */
-
 package com.collector.collectormanager;
 
-import dbConnect.SQLiteConnection;
+
+import Control.UserControl;
+import Control.areasControl;
+import Models.Area;
+import Models.UserModel;
+import View.AreaView;
+import java.util.Map;
 
 /**
  *
@@ -14,21 +19,21 @@ public class CollectorManager {
 
     public static void main(String[] args) {
         
-       
-        SQLiteConnection db = new SQLiteConnection();
+        AreaView areaView = new AreaView();
+        areasControl areaControl = new areasControl();
+
         
-        //Métodos implementados
-        /*
-        db.connect();
-        db.createTable();
-        db.insertData();
-        db.updateData(0, "nome", 0);
-        db.retrieveData();
-        db.disconnect();
-        */
+
+
+
+        //areaControl.createTable("mercearia");
+        areaControl.insertData("mercearia", "789521112355", 48);
         
-        
-        
-        
+        Area area = areaControl.retrieveData("mercearia");
+        areaView.printArea(area);
+
     }
+
+    
+    
 }
